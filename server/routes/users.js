@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { User, Post } from '../models/index.js';
-import { protect, upload, wrap } from '../middleware/auth.js';
+import { protect, saveImage, upload, wrap } from '../middleware/auth.js';
 
 const r = Router();
 r.use(protect);
@@ -33,8 +33,8 @@ r.get('/search', wrap(async (req, res) => {
 r.put('/me', upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'cover', maxCount: 1 }]), wrap(async (req, res) => {
   const data = {};
   for (const k of ['name', 'username', 'bio', 'location', 'website']) if (req.body[k] !== undefined) data[k] = req.body[k];
-  if (req.files?.avatar) data.avatar = '/uploads/' + req.files.avatar[0].filename;
-  if (req.files?.cover) data.cover = '/uploads/' + req.files.cover[0].filename;
+  if (req.files?.avatar) data.avatar = await saveImage(req.files.avatar[0]);
+  if (req.files?.cover) data.cover = await saveImage(req.files.cover[0]);
   res.json(await User.findByIdAndUpdate(req.uid, data, { new: true, runValidators: true }));
 }));
 

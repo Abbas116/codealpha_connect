@@ -25,6 +25,9 @@ export const Post = model('Post', new Schema({
   commentsCount: { type: Number, default: 0 },
 }, { timestamps: true }));
 
+// Images live in MongoDB (Vercel has no writable disk)
+export const Image = model('Image', new Schema({ data: Buffer, mime: String }, { timestamps: true }));
+
 export const Comment = model('Comment', new Schema({
   post: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
   author: { ...userRef, required: true },

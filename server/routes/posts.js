@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Post, Comment, User } from '../models/index.js';
-import { protect, upload, wrap } from '../middleware/auth.js';
+import { protect, saveImage, upload, wrap } from '../middleware/auth.js';
 
 const r = Router();
 r.use(protect); // everything below needs a logged-in user
@@ -41,7 +41,7 @@ r.post('/', upload.single('image'), wrap(async (req, res) => {
   const text = (req.body.text || '').trim();
   if (!text && !req.file) return res.status(400).json({ message: 'Write something or add an image' });
   const tags = [...new Set((text.match(/#(\w+)/g) || []).map(t => t.slice(1).toLowerCase()))];
-  const p = await Post.create({ author: req.uid, text, tags, image: req.file ? '/uploads/' + req.file.filename : '' });
+  const p = await Post.create({ author: req.uid, text, tags, image: req.file ? await saveImage(req.file) : '' });
   await p.populate('author', AUTHOR);
   res.status(201).json(shape(p.toObject(), req.uid));
 }));
