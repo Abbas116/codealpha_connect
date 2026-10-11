@@ -66,3 +66,4 @@ git push -u origin main
 **4.** Back on Render, set `CLIENT_URL` = your Vercel URL and redeploy (this allows CORS).
 
 **Note:** Render's free disk is temporary, so uploaded images disappear on restart/redeploy. For real use, move uploads to Cloudinary (change `upload` in `server/middleware/auth.js`). Free Render also sleeps after inactivity, so the first request can take ~50s.
+# connect-app
